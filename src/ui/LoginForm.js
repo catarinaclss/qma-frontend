@@ -5,11 +5,71 @@ class LoginForm extends Component {
     constructor(){
         super();
         this.submitForm = this.submitForm.bind(this);
+        this.handleEmailChanges = this.handleEmailChanges.bind(this);
+        this.handlePasswordChanges = this.handlePasswordChanges.bind(this);
+
+        this.state = {
+            email: undefined,
+            password: undefined
+        }
+    }
+
+    validateEmail(elementValue){      
+      
+        if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(elementValue))
+        {
+            return (true)
+        }
+            alert("You have entered an invalid email address!")
+            return (false)
+    } 
+
+    handleEmailChanges(e){
+        this.setState({
+            email: e.target.value
+        })
+    }
+
+    handlePasswordChanges(e){
+        this.setState({
+            password: e.target.value
+        })
     }
 
     submitForm(e){
         e.preventDefault();
-        console.log('Enviando form');
+        
+        let dataToSend = {
+            student: {
+                email: this.state.email,
+                password: this.state.password
+            }
+        };
+
+        console.log(dataToSend);
+
+        let url = 'http://localhost:5000/auth/login';
+
+        fetch(url, {
+            method: "POST",
+            body: JSON.stringify(dataToSend),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => response.json())
+            .then(responseJson => {
+                console.log(responseJson);
+                if (responseJson.success) {
+                    localStorage.setItem('QMA_TOKEN', responseJson.token);
+                    this.setState({
+                        logged: true,
+                        error: undefined
+                    })
+                }
+            }).catch(err => this.setState({ error: err }));
+
+            e.target.reset()
+
     }
 
     render() {
@@ -36,10 +96,13 @@ class LoginForm extends Component {
                                 <input type="email" ref="email" className="form-control" id="email" placeholder="Email" />
                             </div>
                             <div className="form-group">
-                                <input type="text" ref="studentcode" className="form-control" id="studentcode" placeholder="Student id" />
+                                <input type="text" ref="studentcode" className="form-control" id="studentcode" placeholder="Student code" />
                             </div>
                             <div className="form-group">
-                                <input type="text" ref="coursecode" className="form-control" id="coursecode" placeholder="Course id" />
+                                <input type="text" ref="coursecode" className="form-control" id="coursecode" placeholder="Course code" />
+                            </div>
+                            <div className="form-group">
+                                <input type="phone" ref="phone" className="form-control" id="coursecode" placeholder="Phone number" />
                             </div>
                             <div className="form-group">
                                 <input type="password" ref="password" className="form-control" id="password" placeholder="Password"  />
@@ -65,10 +128,10 @@ class LoginForm extends Component {
                     <div className="card-body">
                         <form onSubmit={this.submitForm}>
                             <div className="form-group">
-                                <input type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" />
+                                <input type="email" onChangeCapture={this.handleEmailChanges} className="form-control" id="inputLoginEmail" aria-describedby="emailHelp" placeholder="Enter email" />
                             </div>
                             <div className="form-group">
-                                <input type="password"className="form-control" id="exampleInputPassword1" placeholder="Password" />
+                                <input type="password" onChange={this.handlePasswordChanges} className="form-control" id="inputLoginPassword" placeholder="Password" />
                             </div>
                             <div className="form-check" style={{ float: 'left', color: '#bdbdbd', marginTop: '-10px', marginBottom: '10px' }}>
                                 <label className="form-check-label">
@@ -80,10 +143,7 @@ class LoginForm extends Component {
                             <button type="submit" className="btn btn-primary btn-block">Login</button>
                             <small id="emailHelp" className="form-text text-muted">If you are not registered. Plese <a href="#" data-toggle="modal" data-target="#signupModel" data-whatever="@mdo" >Signup</a></small>
                             <br />
-                            
                         </form>
-
-
                     </div>
                 </div>
 
