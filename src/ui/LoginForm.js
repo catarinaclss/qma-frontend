@@ -7,10 +7,19 @@ class LoginForm extends Component {
         this.submitForm = this.submitForm.bind(this);
         this.handleEmailChanges = this.handleEmailChanges.bind(this);
         this.handlePasswordChanges = this.handlePasswordChanges.bind(this);
+        this.submitRegisterForm = this.submitRegisterForm.bind(this);
 
         this.state = {
+            username: undefined,
             email: undefined,
-            password: undefined
+            password: undefined,
+            studentcode: undefined,
+            coursecode: undefined,
+            phone: undefined,
+            signUp:{
+                success: undefined,
+                message: undefined
+            }
         }
     }
 
@@ -24,7 +33,58 @@ class LoginForm extends Component {
             return (false)
     } 
 
+    submitRegisterForm(e){
+        e.preventDefault();
+        
+        let dataToSend = {
+            
+            name: this.refs.username.value,
+            email: this.refs.email.value,
+            password: this.refs.password.value,
+            studentCode: this.refs.studentcode.value,
+            courseCode: this.refs.coursecode.value,
+            phone: this.refs.phone.value
+            
+        };
+
+        console.log(dataToSend);
+
+        let url = 'http://localhost:5000/student';
+
+        fetch(url, {
+            method: "POST",
+            body: JSON.stringify(dataToSend),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(response => response.json())
+        .then(responseJson => {
+            console.log(responseJson)
+            if (responseJson.success) {
+                this.setState({
+                    signUp: {
+                        success: true,
+                        message: responseJson.message
+                    }
+                });
+            } else {
+                this.setState({
+                    signUp: {
+                        success: false,
+                        message: responseJson.message
+                    }
+                });
+            }
+        }).catch(err => console.log('Error ', err));
+
+        this.refs.username.value = '';
+        this.refs.email.value = '';
+        this.refs.password.value = '';
+
+    }
+
     handleEmailChanges(e){
+
         this.setState({
             email: e.target.value
         })
@@ -40,10 +100,10 @@ class LoginForm extends Component {
         e.preventDefault();
         
         let dataToSend = {
-            student: {
-                email: this.state.email,
-                password: this.state.password
-            }
+            
+            email: this.state.email,
+            password: this.state.password
+            
         };
 
         console.log(dataToSend);
@@ -88,7 +148,20 @@ class LoginForm extends Component {
                     </div>
                     <div className="modal-body">
 
-                        <form>
+                     {
+                                    this.state.signUp.success !== undefined ? (
+                                        this.state.signUp.success === true ?
+                                            <div className="alert alert-success" role="alert">
+                                                {this.state.signUp.message}
+                                            </div>
+                                            :
+                                            <div className="alert alert-danger" role="alert">
+                                                {this.state.signUp.message}
+                                            </div>
+                                    ) : ''
+                                }
+
+                        <form onSubmit={this.submitRegisterForm}>
                             <div className="form-group">
                                 <input type="text" ref="username" className="form-control" id="username" placeholder="Name"  />
                             </div>
@@ -102,7 +175,7 @@ class LoginForm extends Component {
                                 <input type="text" ref="coursecode" className="form-control" id="coursecode" placeholder="Course code" />
                             </div>
                             <div className="form-group">
-                                <input type="phone" ref="phone" className="form-control" id="coursecode" placeholder="Phone number" />
+                                <input type="phone" ref="phone" className="form-control" id="phone" placeholder="Phone number" />
                             </div>
                             <div className="form-group">
                                 <input type="password" ref="password" className="form-control" id="password" placeholder="Password"  />
