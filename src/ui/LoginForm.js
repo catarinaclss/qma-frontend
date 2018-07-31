@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { Router, browserHistory } from 'react-router';
 
 class LoginForm extends Component {
 
@@ -8,6 +9,7 @@ class LoginForm extends Component {
         this.handleEmailChanges = this.handleEmailChanges.bind(this);
         this.handlePasswordChanges = this.handlePasswordChanges.bind(this);
         this.submitRegisterForm = this.submitRegisterForm.bind(this);
+        this.clearData = this.handleEmailChanges.bind(this);
 
         this.state = {
             username: undefined,
@@ -19,20 +21,26 @@ class LoginForm extends Component {
             signUp:{
                 success: undefined,
                 message: undefined
+            },
+            login:{
+                success: undefined,
+                message: undefined
             }
         }
+
+        this.baseState = this.state;
     }
 
-    validateEmail(elementValue){      
-      
-        if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(elementValue))
-        {
-            return (true)
-        }
-            alert("You have entered an invalid email address!")
-            return (false)
-    } 
+    resetForm = () => {
+        this.setState(this.baseState)
+    }
 
+    handelClick() {
+        // this works. path updates and renders new component
+        browserHistory.push('/home');
+      }
+
+    /**Method to create new user */
     submitRegisterForm(e){
         e.preventDefault();
         
@@ -77,12 +85,16 @@ class LoginForm extends Component {
             }
         }).catch(err => console.log('Error ', err));
 
-        this.refs.username.value = '';
-        this.refs.email.value = '';
-        this.refs.password.value = '';
-
+        this.setState({
+            signUp: {
+                success: undefined,
+                message: undefined
+            }
+        });
+        e.target.reset();
     }
 
+    /**Method to save typed email from input */
     handleEmailChanges(e){
 
         this.setState({
@@ -90,12 +102,14 @@ class LoginForm extends Component {
         })
     }
 
+    /**Method to save typed password from input */
     handlePasswordChanges(e){
         this.setState({
             password: e.target.value
         })
     }
 
+    /**Method to execute a login operation and save token access into local storage */
     submitForm(e){
         e.preventDefault();
         
@@ -122,12 +136,22 @@ class LoginForm extends Component {
                 if (responseJson.success) {
                     localStorage.setItem('QMA_TOKEN', responseJson.token);
                     this.setState({
-                        logged: true,
-                        error: undefined
-                    })
+                        login: {
+                            success: true,
+                            message: responseJson.message
+                        }
+                    });
+                }else {
+                    this.setState({
+                        login: {
+                            success: false,
+                            message: responseJson.message
+                        }
+                    });
                 }
-            }).catch(err => this.setState({ error: err }));
-
+            }).catch(err => console.log('Error ', err));
+    
+            this.resetForm();
             e.target.reset()
 
     }
@@ -136,53 +160,58 @@ class LoginForm extends Component {
 
         return (
         <div className="container">
+
          {/* Begin Modal Register Form */}
          <div className="modal fade" id="signupModel" tabIndex="-1" role="dialog" aria-labelledby="signupModelLabel" aria-hidden="true">
             <div className="modal-dialog" role="document">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title" id="signupModelLabel">Registration Form</h5>
-                        <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                        <h5 className="modal-title" id="signupModelLabel">Formulário de cadastro</h5>
+                        <button  type="button" className="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div className="modal-body">
 
-                     {
-                                    this.state.signUp.success !== undefined ? (
-                                        this.state.signUp.success === true ?
-                                            <div className="alert alert-success" role="alert">
-                                                {this.state.signUp.message}
-                                            </div>
-                                            :
-                                            <div className="alert alert-danger" role="alert">
-                                                {this.state.signUp.message}
-                                            </div>
-                                    ) : ''
-                                }
+                        {
+                            this.state.signUp.success !== undefined ? (
+                                this.state.signUp.success === true ?
+                                    <div className="alert alert-success" role="alert">
+                                        {this.state.signUp.message}
+                                    </div>
+                                    :
+                                    <div className="alert alert-danger" role="alert">
+                                        {this.state.signUp.message}
+                                    </div>
+                            ) : ''
+                        }
 
                         <form onSubmit={this.submitRegisterForm}>
                             <div className="form-group">
-                                <input type="text" ref="username" className="form-control" id="username" placeholder="Name"  />
+                                <input type="text" ref="username" className="form-control" id="username" placeholder="Nome*"  />
                             </div>
                             <div className="form-group">
-                                <input type="email" ref="email" className="form-control" id="email" placeholder="Email" />
+                                <input type="email" ref="email" className="form-control" id="email" placeholder="Email*" />
                             </div>
                             <div className="form-group">
-                                <input type="text" ref="studentcode" className="form-control" id="studentcode" placeholder="Student code" />
+                                <input type="text" ref="studentcode" className="form-control" id="studentcode" placeholder="Matrícula*" />
                             </div>
                             <div className="form-group">
-                                <input type="text" ref="coursecode" className="form-control" id="coursecode" placeholder="Course code" />
+                                <input type="text" ref="coursecode" className="form-control" id="coursecode" placeholder="Código do curso*" />
                             </div>
                             <div className="form-group">
-                                <input type="phone" ref="phone" className="form-control" id="phone" placeholder="Phone number" />
+                                <input type="phone" ref="phone" className="form-control" id="phone" placeholder="Telefone (opcional)" />
                             </div>
                             <div className="form-group">
-                                <input type="password" ref="password" className="form-control" id="password" placeholder="Password"  />
+                                <input type="password" ref="password" className="form-control" id="password" placeholder="Senha*"  />
                             </div>
+                            <div className="alert alert-light" style={ {float: 'left', position:"absolute", marginLeft:"-15px", color:0xbdbdbd} } role="alert" >
+                                <small >Preencha os campos obrigatórios(*)</small>
+                            </div>
+
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="submit" className="btn btn-primary">Register</button>
+                                <button type="button" onClick={this.resetForm} className="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                <button type="submit" className="btn btn-primary">Cadastrar</button>
                             </div>
                         </form>
                     </div>
@@ -200,11 +229,25 @@ class LoginForm extends Component {
                     <img className="card-img-top" src="https://4.bp.blogspot.com/-sfwlDIjONCQ/WIplMIz9gkI/AAAAAAAAMHE/6GetIYiXedE8BY9jlND2wx501uJF4qkYQCLcB/s1600/ThinkstockPhotos-516072944_Education_Studying1.jpg" alt="Card image cap" />
                     <div className="card-body">
                         <form onSubmit={this.submitForm}>
+
+                             {
+                                this.state.login.success !== undefined ? (
+                                    this.state.login.success !== true ?
+                                    
+                                        <div className="alert alert-danger" id="errormessage"role="alert">
+                                            {this.state.login.message}
+                                        </div>
+                                        :
+                                        ''
+                                ) : ''
+                                
+                            }
+
                             <div className="form-group">
-                                <input type="email" onChangeCapture={this.handleEmailChanges} className="form-control" id="inputLoginEmail" aria-describedby="emailHelp" placeholder="Enter email" />
+                                <input type="email" onChangeCapture={this.handleEmailChanges} className="form-control" id="inputLoginEmail" aria-describedby="emailHelp" placeholder="Email" />
                             </div>
                             <div className="form-group">
-                                <input type="password" onChange={this.handlePasswordChanges} className="form-control" id="inputLoginPassword" placeholder="Password" />
+                                <input type="password" onChange={this.handlePasswordChanges} className="form-control" id="inputLoginPassword" placeholder="Senha" />
                             </div>
                             <div className="form-check" style={{ float: 'left', color: '#bdbdbd', marginTop: '-10px', marginBottom: '10px' }}>
                                 <label className="form-check-label">
@@ -214,7 +257,7 @@ class LoginForm extends Component {
                             </div>
                             
                             <button type="submit" className="btn btn-primary btn-block">Login</button>
-                            <small id="emailHelp" className="form-text text-muted">If you are not registered. Plese <a href="#" data-toggle="modal" data-target="#signupModel" data-whatever="@mdo" >Signup</a></small>
+                            <small id="emailHelp" className="form-text text-muted">Se você ainda não possui uma conta, clique em  <a href="#" data-toggle="modal" data-target="#signupModel" data-whatever="@mdo" >Cadastrar</a></small>
                             <br />
                         </form>
                     </div>
@@ -228,8 +271,6 @@ class LoginForm extends Component {
         </div>
         );
     }
-           
-
 };
 
 export default LoginForm;
