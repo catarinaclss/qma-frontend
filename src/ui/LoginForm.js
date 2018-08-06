@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import { Router, browserHistory } from 'react-router';
+import {Link} from 'react-router';
+import Home from '../container/Home';
 
 class LoginForm extends Component {
-
+  
     constructor(){
         super();
         this.submitForm = this.submitForm.bind(this);
@@ -31,14 +32,12 @@ class LoginForm extends Component {
         this.baseState = this.state;
     }
 
+    /**
+     * Method to clean form fields
+     */
     resetForm = () => {
         this.setState(this.baseState)
     }
-
-    handelClick() {
-        // this works. path updates and renders new component
-        browserHistory.push('/home');
-      }
 
     /**Method to create new user */
     submitRegisterForm(e){
@@ -54,8 +53,6 @@ class LoginForm extends Component {
             phone: this.refs.phone.value
             
         };
-
-        console.log(dataToSend);
 
         let url = 'http://localhost:5000/student';
 
@@ -135,6 +132,7 @@ class LoginForm extends Component {
                 console.log(responseJson);
                 if (responseJson.success) {
                     localStorage.setItem('QMA_TOKEN', responseJson.token);
+                    
                     this.setState({
                         login: {
                             success: true,
@@ -158,119 +156,127 @@ class LoginForm extends Component {
 
     render() {
 
+        if(this.state.login.success){
+            return( <Home />);
+        }
+
         return (
-        <div className="container">
-
-         {/* Begin Modal Register Form */}
-         <div className="modal fade" id="signupModel" tabIndex="-1" role="dialog" aria-labelledby="signupModelLabel" aria-hidden="true">
-            <div className="modal-dialog" role="document">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title" id="signupModelLabel">Formulário de cadastro</h5>
-                        <button  type="button" className="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div className="modal-body">
-
-                        {
-                            this.state.signUp.success !== undefined ? (
-                                this.state.signUp.success === true ?
-                                    <div className="alert alert-success" role="alert">
-                                        {this.state.signUp.message}
-                                    </div>
-                                    :
-                                    <div className="alert alert-danger" role="alert">
-                                        {this.state.signUp.message}
-                                    </div>
-                            ) : ''
-                        }
-
-                        <form onSubmit={this.submitRegisterForm}>
-                            <div className="form-group">
-                                <input type="text" ref="username" className="form-control" id="username" placeholder="Nome*"  />
-                            </div>
-                            <div className="form-group">
-                                <input type="email" ref="email" className="form-control" id="email" placeholder="Email*" />
-                            </div>
-                            <div className="form-group">
-                                <input type="text" ref="studentcode" className="form-control" id="studentcode" placeholder="Matrícula*" />
-                            </div>
-                            <div className="form-group">
-                                <input type="text" ref="coursecode" className="form-control" id="coursecode" placeholder="Código do curso*" />
-                            </div>
-                            <div className="form-group">
-                                <input type="phone" ref="phone" className="form-control" id="phone" placeholder="Telefone (opcional)" />
-                            </div>
-                            <div className="form-group">
-                                <input type="password" ref="password" className="form-control" id="password" placeholder="Senha*"  />
-                            </div>
-                            <div className="alert alert-light" style={ {float: 'left', position:"absolute", marginLeft:"-15px", color:0xbdbdbd} } role="alert" >
-                                <small >Preencha os campos obrigatórios(*)</small>
-                            </div>
-
-                            <div className="modal-footer">
-                                <button type="button" onClick={this.resetForm} className="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                                <button type="submit" className="btn btn-primary">Cadastrar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {/* End Modal Register Form */}
-
-        {/* Begin Login Form*/}
-        <div className="row" style={{ paddingTop: '50px' }}>
-            <div className="col">
-            </div>
-            <div className="col">
-                <div className="card" style={{ width: '20rem', boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)' }}>
-                    <img className="card-img-top" src="https://4.bp.blogspot.com/-sfwlDIjONCQ/WIplMIz9gkI/AAAAAAAAMHE/6GetIYiXedE8BY9jlND2wx501uJF4qkYQCLcB/s1600/ThinkstockPhotos-516072944_Education_Studying1.jpg" alt="Card image cap" />
-                    <div className="card-body">
-                        <form onSubmit={this.submitForm}>
-
-                             {
-                                this.state.login.success !== undefined ? (
-                                    this.state.login.success !== true ?
-                                    
-                                        <div className="alert alert-danger" id="errormessage"role="alert">
-                                            {this.state.login.message}
+            <div className="container">
+    
+            
+                {/* Begin Modal Register Form */}
+                <div className="modal fade" id="signupModel" tabIndex="-1" role="dialog" aria-labelledby="signupModelLabel" aria-hidden="true">
+                <div className="modal-dialog" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="signupModelLabel">Formulário de cadastro</h5>
+                            <button  type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div className="modal-body">
+    
+                            {
+                                this.state.signUp.success !== undefined ? (
+                                    this.state.signUp.success === true ?
+                                        <div className="alert alert-success" role="alert">
+                                            {this.state.signUp.message}
                                         </div>
                                         :
-                                        ''
+                                        <div className="alert alert-danger" role="alert">
+                                            {this.state.signUp.message}
+                                        </div>
                                 ) : ''
-                                
                             }
-
-                            <div className="form-group">
-                                <input type="email" onChangeCapture={this.handleEmailChanges} className="form-control" id="inputLoginEmail" aria-describedby="emailHelp" placeholder="Email" />
-                            </div>
-                            <div className="form-group">
-                                <input type="password" onChange={this.handlePasswordChanges} className="form-control" id="inputLoginPassword" placeholder="Senha" />
-                            </div>
-                            <div className="form-check" style={{ float: 'left', color: '#bdbdbd', marginTop: '-10px', marginBottom: '10px' }}>
-                                <label className="form-check-label">
-                                    <input type="checkbox" className="form-check-input" />
-                                    <span>Remember me</span>
-                                </label>
-                            </div>
-                            
-                            <button type="submit" className="btn btn-primary btn-block">Login</button>
-                            <small id="emailHelp" className="form-text text-muted">Se você ainda não possui uma conta, clique em  <a href="#" data-toggle="modal" data-target="#signupModel" data-whatever="@mdo" >Cadastrar</a></small>
-                            <br />
-                        </form>
+    
+                            <form onSubmit={this.submitRegisterForm}>
+                                <div className="form-group">
+                                    <input type="text" ref="username" className="form-control" id="username" placeholder="Nome*"  />
+                                </div>
+                                <div className="form-group">
+                                    <input type="email" ref="email" className="form-control" id="email" placeholder="Email*" />
+                                </div>
+                                <div className="form-group">
+                                    <input type="text" ref="studentcode" className="form-control" id="studentcode" placeholder="Matrícula*" />
+                                </div>
+                                <div className="form-group">
+                                    <input type="text" ref="coursecode" className="form-control" id="coursecode" placeholder="Código do curso*" />
+                                </div>
+                                <div className="form-group">
+                                    <input type="phone" ref="phone" className="form-control" id="phone" placeholder="Telefone (opcional)" />
+                                </div>
+                                <div className="form-group">
+                                    <input type="password" ref="password" className="form-control" id="password" placeholder="Senha*"  />
+                                </div>
+                                <div className="alert alert-light" style={ {float: 'left', position:"absolute", marginLeft:"-15px", color:0xbdbdbd} } role="alert" >
+                                    <small >Preencha os campos obrigatórios(*)</small>
+                                </div>
+    
+                                <div className="modal-footer">
+                                    <button type="button" onClick={this.resetForm} className="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                    <button type="submit" className="btn btn-primary">Cadastrar</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-
             </div>
-            <div className="col">
+            {/* End Modal Register Form */}
+    
+            {/* Begin Login Form*/}
+            <div className="row" style={{ paddingTop: '50px' }}>
+                <div className="col">
+                </div>
+                <div className="col">
+                    <div className="card" style={{ width: '20rem', boxShadow: '0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)' }}>
+                        <img className="card-img-top" src="https://4.bp.blogspot.com/-sfwlDIjONCQ/WIplMIz9gkI/AAAAAAAAMHE/6GetIYiXedE8BY9jlND2wx501uJF4qkYQCLcB/s1600/ThinkstockPhotos-516072944_Education_Studying1.jpg" alt="Card image cap" />
+                        <div className="card-body">
+                            <form onSubmit={this.submitForm}>
+    
+                                    {
+                                    this.state.login.success !== undefined ? (
+                                        this.state.login.success !== true ?
+                                        
+                                            <div className="alert alert-danger" id="errormessage"role="alert">
+                                                {this.state.login.message}
+                                            </div>
+                                            :
+                                            ''
+                                    ) : ''
+                                    
+                                }
+    
+                                <div className="form-group">
+                                    <input type="email" onChangeCapture={this.handleEmailChanges} className="form-control" id="inputLoginEmail" aria-describedby="emailHelp" placeholder="Email" />
+                                </div>
+                                <div className="form-group">
+                                    <input type="password" onChange={this.handlePasswordChanges} className="form-control" id="inputLoginPassword" placeholder="Senha" />
+                                </div>
+                                <div className="form-check" style={{ float: 'left', color: '#bdbdbd', marginTop: '-10px', marginBottom: '10px' }}>
+                                    <label className="form-check-label">
+                                        <input type="checkbox" className="form-check-input" />
+                                        <span>Remember me</span>
+                                    </label>
+                                </div>
+                                
+                                <button type="submit" className="btn btn-primary btn-block">Login</button>
+                                <small id="emailHelp" className="form-text text-muted">Se você ainda não possui uma conta, clique em  <a href="#" data-toggle="modal" data-target="#signupModel" data-whatever="@mdo" >Cadastrar</a></small>
+                                <br />
+                            </form>
+                        </div>
+                    </div>
+    
+                </div>
+                <div className="col">
+                </div>
             </div>
-        </div>
-        {/* End Login Form */}
-        </div>
-        );
+            {/* End Login Form */}
+            </div>
+            );
     }
+
+
+    
 };
 
 export default LoginForm;
