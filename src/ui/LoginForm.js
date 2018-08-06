@@ -111,13 +111,9 @@ class LoginForm extends Component {
         e.preventDefault();
         
         let dataToSend = {
-            
             email: this.state.email,
             password: this.state.password
-            
         };
-
-        console.log(dataToSend);
 
         let url = 'http://localhost:5000/auth/login';
 
@@ -150,8 +146,7 @@ class LoginForm extends Component {
             }).catch(err => console.log('Error ', err));
     
             this.resetForm();
-            e.target.reset()
-
+            e.target.reset();
     }
 
     render() {

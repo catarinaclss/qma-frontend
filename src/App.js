@@ -8,7 +8,9 @@ class App extends Component {
     return (
       <div className="App">
         <div className="container">
+       
           <LoginForm />
+          {this.props.children}
         </div>
       </div>
     );
