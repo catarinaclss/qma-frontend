@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 //import logo from './logo.svg';
 import './App.css';
-import LoginForm from './ui/LoginForm';
+import LoginForm from './container/LoginForm';
 
 class App extends Component {
   render() {
@@ -10,7 +10,7 @@ class App extends Component {
         <div className="container">
        
           <LoginForm />
-          {this.props.children}
+       
         </div>
       </div>
     );

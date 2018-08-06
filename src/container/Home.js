@@ -5,8 +5,6 @@ import NavBar from '../ui/NavBar';
 
 class Home extends Component {
 
-  
-
     homeCardStudents = {
         title: 'Alunos',
         buttonText: 'Visualizar alunos',
